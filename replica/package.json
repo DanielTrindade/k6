@@ -1,0 +1,13 @@
+{
+  "name": "jsonplaceholder-replica",
+  "version": "1.0.0",
+  "description": "Réplica local do JSONPlaceholder para testes de carga limpos com k6",
+  "private": true,
+  "scripts": {
+    "generate": "node generate-db.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "json-server": "0.17.4"
+  }
+}

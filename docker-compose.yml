@@ -1,0 +1,43 @@
+# Stack de apoio aos testes de carga:
+#   - replica  : réplica local do JSONPlaceholder (alvo limpo dos CTs pesados)
+#   - influxdb : armazena as métricas que o k6 envia (--out influxdb)
+#   - grafana  : dashboard com datasource + painéis já provisionados
+#
+# Subir tudo:   docker compose up -d
+# Acessos:      Réplica  -> http://localhost:3000
+#               InfluxDB -> http://localhost:8086  (db: k6)
+#               Grafana  -> http://localhost:3001  (login anônimo, admin/admin)
+services:
+  replica:
+    build: ./replica
+    container_name: jsonph-replica
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: k6-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+      - INFLUXDB_HTTP_AUTH_ENABLED=false
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: k6-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - influxdb
+    restart: unless-stopped
