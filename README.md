@@ -130,6 +130,9 @@ No Linux/macOS/Git Bash: `./run-all.sh` (ou `BASE_URL=... ./run-all.sh`).
 # Réplica local + dashboard:
 k6 run -e BASE_URL=http://localhost:3000 --out influxdb=http://localhost:8086/k6 --tag testid=ct01 tests/ct01-carga-basica-posts.js
 
+# CT-03 recomendado: roda o k6 dentro da rede Docker e evita gargalo do localhost publicado:
+docker compose --profile tools run --rm k6 run -e BASE_URL=http://replica:3000 --out influxdb=http://influxdb:8086/k6 --tag testid=ct03 tests/ct03-spike-posts.js
+
 # Rápido, só no terminal (sem Docker), contra o público:
 k6 run -e BASE_URL=https://jsonplaceholder.typicode.com tests/ct01-carga-basica-posts.js
 ```

@@ -41,3 +41,15 @@ services:
     depends_on:
       - influxdb
     restart: unless-stopped
+
+  k6:
+    image: grafana/k6:latest
+    profiles:
+      - tools
+    working_dir: /scripts
+    volumes:
+      - .:/scripts
+    depends_on:
+      - replica
+      - influxdb
+    entrypoint: ["k6"]

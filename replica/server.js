@@ -10,9 +10,11 @@ const jsonServer = require('json-server');
 
 const server = jsonServer.create();
 const router = jsonServer.router('db.json');
-const middlewares = jsonServer.defaults();
+const middlewares = jsonServer.defaults({
+  logger: false,
+});
 
-server.use(middlewares); // logger, static, cors, body-parser
+server.use(middlewares); // static, cors, body-parser
 
 // Intercepta escritas ANTES do router para devolver respostas fakeadas.
 server.post('/posts', (req, res) => {
@@ -32,6 +34,9 @@ server.delete('/posts/:id', (req, res) => {
 server.use(router);
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
+const httpServer = server.listen(PORT, '0.0.0.0', 1024, () => {
   console.log(`Réplica JSONPlaceholder ouvindo em http://0.0.0.0:${PORT}`);
 });
+
+httpServer.keepAliveTimeout = 65000;
+httpServer.headersTimeout = 66000;
